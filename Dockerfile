@@ -2,6 +2,8 @@
 # Stage 1: Builder / Dependency Staging
 # ==========================================
 ARG PYTHON_BASE=python:3.12.14-slim-bookworm@sha256:9c47360a2a0355e2da18516d0b1c2126ec22c195d2185e97347c9d98398c5bef
+ARG GATEKEEPER_VERSION=dev
+ARG GATEKEEPER_COMMIT=local
 FROM ${PYTHON_BASE} AS builder
 
 WORKDIR /app
@@ -26,10 +28,19 @@ FROM ${PYTHON_BASE} AS runtime
 
 WORKDIR /app
 
+ARG GATEKEEPER_VERSION=dev
+ARG GATEKEEPER_COMMIT=local
+
+LABEL org.opencontainers.image.title="gatekeeper" \
+            org.opencontainers.image.version="${GATEKEEPER_VERSION}" \
+            org.opencontainers.image.revision="${GATEKEEPER_COMMIT}"
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+        PIP_DISABLE_PIP_VERSION_CHECK=1 \
+        GATEKEEPER_VERSION=${GATEKEEPER_VERSION} \
+        GATEKEEPER_COMMIT=${GATEKEEPER_COMMIT}
 
 # Install minimal runtime system dependencies (OpenCV headless dependencies)
 RUN apt-get update && apt-get install -y --no-install-recommends \

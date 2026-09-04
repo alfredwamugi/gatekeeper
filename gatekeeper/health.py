@@ -40,8 +40,8 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
             self._send_json(401, {"status": "unauthorized", "message": "missing or invalid bearer token"})
             return
 
-        if self.path == "/healthz":
-            self._send_json(200, {"status": "ALIVE"})
+        if self.path in {"/health", "/healthz"}:
+            self._send_json(200, self.server.health_payload())
             return
 
         if self.path == "/readyz":
@@ -108,6 +108,14 @@ class HealthCheckServer(ThreadingHTTPServer):
         if self._is_local_client(client_ip):
             return True
         return authorization_header == f"Bearer {token}"
+
+    @staticmethod
+    def health_payload() -> dict:
+        return {
+            "status": "ALIVE",
+            "version": os.getenv("GATEKEEPER_VERSION", "dev"),
+            "commit": os.getenv("GATEKEEPER_COMMIT", "local"),
+        }
 
     def ready_status(self):
         last_frame_age = time.time() - self._current_frame_timestamp()
