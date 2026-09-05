@@ -1,4 +1,4 @@
-﻿[build-system]
+[build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
   "cairosvg>=2.7.1",
-  "openvino>=2023.3.0",
+  "openvino>=2026.3.1",
   "opencv-python-headless>=4.8.0",
   "ultralytics>=8.0.0",
   "supervision>=0.18.0",
