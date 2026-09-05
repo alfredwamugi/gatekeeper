@@ -60,6 +60,7 @@ RUN useradd --create-home --shell /bin/bash gatekeeper \
 
 # Copy application code
 COPY --chown=gatekeeper:gatekeeper gatekeeper/ ./gatekeeper/
+COPY --chown=gatekeeper:gatekeeper models/ ./models/
 COPY --chown=gatekeeper:gatekeeper scripts/ ./scripts/
 COPY --chown=gatekeeper:gatekeeper main.py ./
 COPY --chown=gatekeeper:gatekeeper config.json ./

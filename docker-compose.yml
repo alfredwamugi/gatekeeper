@@ -1,6 +1,4 @@
-﻿version: "3.8"
-
-services:
+﻿services:
   gatekeeper:
     build:
       context: .
@@ -16,9 +14,6 @@ services:
       - HEALTH_PORT=8080
     volumes:
       - ./data:/app/data
-    devices:
-      # Optional: Uncomment if passing through Intel/NVIDIA GPU acceleration for YOLO inference
-      # - /dev/dri:/dev/dri
     logging:
       driver: "json-file"
       options:
@@ -26,7 +21,6 @@ services:
         max-file: "3"
     mem_limit: 2g
     cpus: "1.50"
-    pids_limit: 256
     deploy:
       resources:
         limits:
