@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 import signal
 import threading
 import time
@@ -11,6 +12,12 @@ from gatekeeper.remote_sync import RemoteSyncWorker
 from gatekeeper.tracker import Tracker
 
 logger = logging.getLogger("gatekeeper.runner")
+
+
+def _health_host() -> str:
+    if Path("/.dockerenv").exists():
+        return "0.0.0.0"
+    return "127.0.0.1"
 
 
 class GatekeeperRunner:
@@ -47,7 +54,7 @@ class GatekeeperRunner:
         )
 
         self.health_server = HealthCheckServer(
-            host="127.0.0.1",
+            host=_health_host(),
             port=int(self.config.get("health_port", 8080)),
             db_path=self.config.get("db_path", "data/gatekeeper.db"),
         )
@@ -93,7 +100,13 @@ class GatekeeperRunner:
             },
         }
 
-    def start(self) -> None:
+    def start(
+        self,
+        source: Optional[str] = None,
+        mock_feed: bool = False,
+        test_video: Optional[str] = None,
+        show_window: bool = False,
+    ) -> None:
         self.setup()
         self._running = True
         signal.signal(signal.SIGINT, self._handle_signal)
@@ -108,7 +121,7 @@ class GatekeeperRunner:
         logger.info("Gatekeeper runtime started successfully")
         try:
             if self.tracker is not None:
-                self.tracker.run()
+                self.tracker.run(source=source, mock_feed=mock_feed, test_video=test_video, show_window=show_window)
         except KeyboardInterrupt:
             logger.info("Keyboard interrupt received; stopping runtime")
         finally:

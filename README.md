@@ -39,10 +39,10 @@ cp .env.example .env
 python main.py
 ```
 
-Run with Docker Compose (reads `.env` automatically):
+Run with Docker Compose. The helper script falls back to `docker-compose` if the v2 plugin is not installed:
 
 ```bash
-docker compose up --build
+./deploy/compose.sh up --build
 ```
 
 ## Production notes
@@ -86,7 +86,7 @@ docker build -t gatekeeper:latest .
 Or run the app using Docker Compose:
 
 ```bash
-docker compose up --build
+./deploy/compose.sh up --build
 ```
 
 This container is intended for edge-style deployment and runs the tracker entrypoint defined in `main.py`.
@@ -137,4 +137,3 @@ make build
 ```
 
 To publish to PyPI or a private package index, use the workflow in `.github/workflows/release.yml`.
-

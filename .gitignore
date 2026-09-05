@@ -40,7 +40,7 @@ htmlcov/
 unittest*.log
 
 # Heavy weights & test media
-yolov8n.pt
+yolo11n.pt
 videos/
 *.mp4
 *.avi

@@ -122,7 +122,7 @@ Expected highlights:
 ### Manually Prune Audit Storage (if needed)
 
 ```bash
-docker compose exec gatekeeper python scripts/prune_storage.py
+./deploy/compose.sh exec gatekeeper python scripts/prune_storage.py
 ```
 
 ---

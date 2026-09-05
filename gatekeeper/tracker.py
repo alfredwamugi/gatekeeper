@@ -108,7 +108,7 @@ class Tracker:
         self.iou_threshold = iou_threshold
         self.frame_skip = max(1, int(self.config.get("frame_skip", 1)))
 
-        selected_model_path = model_path or self.config.get("model_path", "models/yolov8n_openvino_model")
+        selected_model_path = model_path or self.config.get("model_path", "models/yolo11n_openvino_model")
         resolved_model_path = resolve_model_dir(selected_model_path)
         logger.info("Loading model: %s", resolved_model_path)
         logging.getLogger("ultralytics").setLevel(logging.ERROR)

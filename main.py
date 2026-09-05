@@ -14,12 +14,7 @@ def main() -> None:
     args = parser.parse_args()
 
     runner = GatekeeperRunner()
-    runner.setup()
-    try:
-        if runner.tracker is not None:
-            runner.tracker.run(source=args.source, mock_feed=args.mock_feed, test_video=args.test_video, show_window=args.show_window)
-    finally:
-        runner.stop()
+    runner.start(source=args.source, mock_feed=args.mock_feed, test_video=args.test_video, show_window=args.show_window)
 
 
 if __name__ == "__main__":

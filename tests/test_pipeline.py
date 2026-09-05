@@ -168,7 +168,7 @@ def main():
         pass
 
     # 3. Model & Tracker Setup
-    model = YOLO("yolov8n_openvino_model/", task="detect")
+    model = YOLO("yolo11n_openvino_model/", task="detect")
     tracker = sv.ByteTrack()
 
     # 4. Polygon Zone & Annotators Setup

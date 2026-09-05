@@ -5,6 +5,7 @@ INSTALL_DIR="/opt/gatekeeper"
 SERVICE_NAME="gatekeeper.service"
 READYZ_URL="http://localhost:8080/readyz"
 READY_TIMEOUT_SECONDS=60
+COMPOSE_CMD=""
 
 echo "========================================="
 echo " Gatekeeper Edge Node Provisioning Tool "
@@ -34,10 +35,10 @@ backup_current_image() {
 
 build_or_pull_new_image() {
     log "Pulling latest image metadata (if available)..."
-    docker compose pull --ignore-build-errors gatekeeper || true
+    "$COMPOSE_CMD" pull --ignore-build-errors gatekeeper || true
 
     log "Building/updating gatekeeper image..."
-    docker compose build --pull gatekeeper
+    "$COMPOSE_CMD" build --pull gatekeeper
 }
 
 wait_for_readyz() {
@@ -59,7 +60,7 @@ rollback_to_backup() {
         return 1
     fi
 
-    docker compose down || true
+    "$COMPOSE_CMD" down || true
     docker image tag gatekeeper:backup gatekeeper:latest
     systemctl restart "$SERVICE_NAME"
 
@@ -94,6 +95,9 @@ mkdir -p "$INSTALL_DIR/data"
 # Copy deployment assets into /opt/gatekeeper
 cp -r . "$INSTALL_DIR/"
 
+COMPOSE_CMD="$INSTALL_DIR/deploy/compose.sh"
+chmod +x "$COMPOSE_CMD"
+
 # Populate default .env if absent
 if [ ! -f "$INSTALL_DIR/.env" ]; then
         log "Creating default .env from .env.example..."
@@ -120,7 +124,7 @@ if wait_for_readyz; then
     log "Deployment healthy: /readyz succeeded within ${READY_TIMEOUT_SECONDS}s"
 else
     log "Deployment unhealthy: /readyz failed within ${READY_TIMEOUT_SECONDS}s"
-    docker compose logs --tail=100 gatekeeper || true
+    "$COMPOSE_CMD" logs --tail=100 gatekeeper || true
     if ! rollback_to_backup; then
         log "ALERT: rollback did not restore health. Inspect logs immediately: journalctl -u $SERVICE_NAME -n 200"
         exit 1

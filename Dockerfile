@@ -9,7 +9,9 @@ FROM ${PYTHON_BASE} AS builder
 WORKDIR /app
 
 ENV PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_DEFAULT_TIMEOUT=300 \
+    PIP_RETRIES=10
 
 # Install system build dependencies required for compiling certain wheels
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -18,8 +20,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip and install Python requirements into a local prefix
-COPY requirements.txt pyproject.toml ./
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install --default-timeout=300 \
+    torch==2.13.0+cpu \
+    torchvision==0.28.0+cpu \
+    --index-url https://download.pytorch.org/whl/cpu
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir --prefix=/install --default-timeout=300 -r requirements.txt
 
 # ==========================================
 # Stage 2: Lean Production Runtime
@@ -72,7 +79,7 @@ EXPOSE 8080
 
 # Native Docker Healthcheck probing the Sprint 1 readiness endpoint
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-  CMD curl -f http://localhost:8080/readyz || exit 1
+    CMD curl -f http://localhost:8080/health || exit 1
 
 # Default command invoking the GatekeeperRunner bootstrap
 CMD ["python", "main.py"]

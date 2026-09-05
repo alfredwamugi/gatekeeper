@@ -40,7 +40,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "gate_id": "Gate 1",
     "frame_skip": 3,
     "inference_resolution": [480, 288],
-    "model_path": "models/yolov8n_openvino_model",
+    "model_path": "models/yolo11n_openvino_model",
     "dwell_threshold_seconds": 240,
     "short_dwell_mins": 3.0,
     "long_dwell_mins": 25.0,
@@ -191,7 +191,7 @@ def resolve_model_dir(model_path: str) -> Path:
             return candidate
     if model_path:
         return Path(model_path)
-    return root / "models" / "yolov8n_openvino_model"
+    return root / "models" / "yolo11n_openvino_model"
 
 
 def load_config(path: str = "config.json") -> Dict[str, Any]:
